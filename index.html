@@ -263,71 +263,35 @@
 
   <script>
     // Build the bookmarklet code
+    // Approche : fetch() la page depuis le même domaine (pas de CORS),
+    // parse le HTML brut comme le fait le script Python — contourne le SES lockdown.
     var code = `(function(){
-  // Collecte toutes les données RSC disponibles
-  var data='';
-  if(window.__next_f&&window.__next_f.length){
-    window.__next_f.forEach(function(c){
-      if(!c)return;
-      // format [type, payload] — type peut être 1 (string) ou autre
-      if(c[0]===1&&typeof c[1]==='string')data+=c[1];
-      else if(typeof c[1]==='string')data+=c[1];
-    });
-  }
-  // Fallback : cherche directement dans le HTML de la page
-  if(data.indexOf('sceneContents')===-1){
-    data=document.documentElement.innerHTML;
-  }
-  // Cherche "sceneContents" avec ou sans guillemets autour de la clé
-  var key='"sceneContents":';
-  var idx=data.indexOf(key);
-  if(idx===-1){key='sceneContents":';idx=data.indexOf(key);}
-  if(idx===-1){
-    // Dernier recours : cherche le JSON excalidraw directement
-    idx=data.indexOf('"type":"excalidraw"');
-    if(idx===-1){alert('Aucune donnée de scène trouvée.\\nAttends que la page soit entièrement chargée, puis réessaie.');return;}
-    // Remonte jusqu'à l'accolade ouvrante
-    var start=idx;
-    while(start>0&&data[start]!=='{')start--;
-    var rest=data.slice(start);
-    var depth=0,end=0;
-    for(var i=0;i<rest.length;i++){
-      if(rest[i]==='{')depth++;
-      else if(rest[i]==='}'){depth--;if(depth===0){end=i+1;break;}}
-    }
-    var json=rest.slice(0,end);
-    triggerDownload(json);
-    return;
-  }
-  var rest=data.slice(idx+key.length),depth=0,end=0;
-  // Gère l'unescaping si on vient du HTML brut
-  if(rest[0]==='{'){
-    for(var i=0;i<rest.length;i++){
-      if(rest[i]==='{')depth++;
-      else if(rest[i]==='}'){depth--;if(depth===0){end=i+1;break;}}
-    }
-  } else {
-    // Données encore escapées (\\{ etc)
-    rest=rest.replace(/\\\\"/g,'"').replace(/\\\\\\\\'/g,'\\\\');
-    for(var i=0;i<rest.length;i++){
-      if(rest[i]==='{')depth++;
-      else if(rest[i]==='}'){depth--;if(depth===0){end=i+1;break;}}
-    }
-  }
-  if(!end){alert('Impossible de parser les données de la scène.');return;}
-  triggerDownload(rest.slice(0,end));
-  function triggerDownload(json){
-    try{JSON.parse(json);}catch(e){alert('JSON invalide: '+e.message);return;}
-    var title=(document.title||'scene').replace(/ - Excalidraw\\+$/,'').trim();
-    var safe=title.replace(/[\\/\\\\:*?"<>|]/g,'_')||'excalidraw-export';
-    var blob=new Blob([json],{type:'application/json'});
-    var a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download=safe+'.excalidraw';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(a.href);},1000);
-  }
+  fetch(window.location.href)
+    .then(function(r){return r.text();})
+    .then(function(html){
+      var idx=html.indexOf('"sceneContents":');
+      if(idx===-1){alert('Aucune donnée de scène trouvée.\\nCe lien est-il bien un lien Excalidraw+ read-only ?');return;}
+      var raw=html.slice(idx+16);
+      // Les données sont dans une string JS escapée — on désescape
+      var unesc=raw.replace(/\\\\"/g,'"').replace(/\\\\\\\\/g,'\\\\').replace(/\\\\\\//g,'/');
+      var depth=0,end=0;
+      for(var i=0;i<unesc.length;i++){
+        if(unesc[i]==='{')depth++;
+        else if(unesc[i]==='}'){depth--;if(depth===0){end=i+1;break;}}
+      }
+      if(!end){alert('Impossible de parser la scène.');return;}
+      var json=unesc.slice(0,end);
+      try{JSON.parse(json);}catch(e){alert('JSON invalide: '+e.message);return;}
+      var title=(document.title||'scene').replace(/ - Excalidraw\\+$/,'').trim();
+      var safe=title.replace(/[\\/\\\\:*?"<>|]/g,'_')||'excalidraw-export';
+      var blob=new Blob([json],{type:'application/json'});
+      var a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download=safe+'.excalidraw';
+      document.body.appendChild(a);a.click();
+      setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(a.href);},1000);
+    })
+    .catch(function(e){alert('Erreur réseau: '+e.message);});
 })();`;
 
     var minified = code.replace(/\n\s*/g,' ').trim();
