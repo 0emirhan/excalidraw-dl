@@ -6,283 +6,326 @@
   <title>Excalidraw DL</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --border: #30363d;
-      --text: #e6edf3;
-      --muted: #8b949e;
-      --accent: #6e40c9;
-      --accent-hover: #8957e5;
-      --green: #3fb950;
-      --red: #f85149;
-      --code-bg: #1f2428;
+      --bg: #0d1117; --surface: #161b22; --border: #30363d;
+      --text: #e6edf3; --muted: #8b949e;
+      --accent: #6e40c9; --accent-h: #8957e5;
+      --green: #3fb950; --red: #f85149; --code: #1f2428;
     }
-
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
+      background: var(--bg); color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 40px 20px;
     }
-
-    header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    header h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-
-    header h1 span { color: var(--accent-hover); }
-
-    header p {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-
+    header { text-align: center; margin-bottom: 36px; }
+    header h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -.5px; }
+    header h1 span { color: var(--accent-h); }
+    header p { margin-top: 10px; color: var(--muted); font-size: .95rem; }
     .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px;
-      width: 100%;
-      max-width: 600px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px; width: 100%; max-width: 600px;
     }
 
+    /* Bookmarklet button */
+    .bm-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .bm-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 13px 28px; background: var(--accent); color: #fff;
+      font-size: 1rem; font-weight: 600; border-radius: 8px;
+      text-decoration: none; cursor: grab; user-select: none;
+      transition: background .15s, transform .1s;
+    }
+    .bm-btn:hover { background: var(--accent-h); transform: translateY(-1px); }
+    .bm-btn:active { cursor: grabbing; }
+    .bm-hint { color: var(--muted); font-size: .88rem; text-align: center; }
+    .bm-hint strong { color: var(--text); }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0; color: var(--muted); font-size: .82rem;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* URL form */
     textarea {
-      width: 100%;
-      min-height: 120px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
-      font-size: 0.85rem;
-      padding: 12px;
-      resize: vertical;
-      outline: none;
-      transition: border-color 0.15s;
+      width: 100%; min-height: 100px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+      font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: .82rem;
+      padding: 12px; resize: vertical; outline: none; transition: border-color .15s;
       line-height: 1.6;
     }
-
     textarea:focus { border-color: var(--accent); }
-
     textarea::placeholder { color: var(--muted); }
-
     .btn {
-      margin-top: 14px;
-      width: 100%;
-      padding: 13px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
+      margin-top: 12px; width: 100%; padding: 13px;
+      background: var(--accent); color: #fff; font-size: 1rem;
+      font-weight: 600; border: none; border-radius: 8px;
+      cursor: pointer; transition: background .15s, transform .1s;
     }
-
-    .btn:hover:not(:disabled) { background: var(--accent-hover); }
-    .btn:active:not(:disabled) { transform: scale(0.98); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn:hover:not(:disabled) { background: var(--accent-h); }
+    .btn:active:not(:disabled) { transform: scale(.98); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
 
     /* Log */
-    #log {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
+    #log { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
     .log-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 0.88rem;
-      padding: 10px 12px;
-      border-radius: 6px;
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      word-break: break-all;
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: .86rem; padding: 10px 12px; border-radius: 6px;
+      background: var(--code); border: 1px solid var(--border); word-break: break-all;
     }
-
     .log-item.loading { border-color: var(--accent); }
     .log-item.success { border-color: var(--green); }
     .log-item.error   { border-color: var(--red); }
-
-    .icon {
-      font-size: 1rem;
-      flex-shrink: 0;
-      margin-top: 1px;
+    .log-detail { color: var(--muted); font-size: .78rem; margin-top: 3px; }
+    .spinner {
+      flex-shrink: 0; width: 14px; height: 14px; margin-top: 2px;
+      border: 2px solid var(--border); border-top-color: var(--accent-h);
+      border-radius: 50%; animation: spin .7s linear infinite;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .log-detail { color: var(--muted); font-size: 0.8rem; margin-top: 3px; }
-
-    footer {
-      margin-top: 32px;
-      color: var(--muted);
-      font-size: 0.82rem;
-      text-align: center;
-    }
-
-    footer a { color: var(--accent-hover); text-decoration: none; }
+    footer { margin-top: 28px; color: var(--muted); font-size: .82rem; text-align: center; }
+    footer a { color: var(--accent-h); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
 
-    .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent-hover);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
+    h2 { font-size: .78rem; font-weight: 600; color: var(--muted);
+         text-transform: uppercase; letter-spacing: .08em; margin-bottom: 18px; }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>Excalidraw <span>DL</span></h1>
-    <p>Paste one or more read-only Excalidraw links — one per line.</p>
-  </header>
+<header>
+  <h1>Excalidraw <span>DL</span></h1>
+  <p>Download any read-only Excalidraw+ presentation as an editable <code style="background:var(--code);padding:2px 6px;border-radius:4px;color:var(--accent-h)">.excalidraw</code> file.</p>
+</header>
 
-  <div class="card">
-    <textarea id="input" placeholder="https://link.excalidraw.com/p/readonly/XXXXXX
-https://link.excalidraw.com/p/readonly/YYYYYY
-https://link.excalidraw.com/p/readonly/ZZZZZZ"></textarea>
-    <button class="btn" id="btn" onclick="run()">Download</button>
-    <div id="log"></div>
+<div class="card">
+  <h2>Bookmarklet — works on any Excalidraw page</h2>
+  <div class="bm-wrap">
+    <a class="bm-btn" id="bm" href="#">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Excalidraw DL
+    </a>
+    <p class="bm-hint">
+      <strong>Glisse</strong> ce bouton dans ta barre de favoris.<br>
+      Puis clique dessus sur n'importe quelle page Excalidraw read-only.
+    </p>
   </div>
 
-  <footer>
-    <a href="https://github.com/0emirhan/excalidraw-dl">GitHub</a>
-    &nbsp;·&nbsp;
-    No data is stored. Files download directly to your browser.
-  </footer>
+  <div class="divider">ou colle les liens directement</div>
 
-  <script>
-    // Proxies tentés dans l'ordre — le premier qui répond avec les données gagne
-    const PROXIES = [
-      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-      url => `https://thingproxy.freeboard.io/fetch/${url}`,
-    ];
+  <h2>Batch — un lien par ligne</h2>
+  <textarea id="input" placeholder="https://link.excalidraw.com/p/readonly/XXXXXX&#10;https://link.excalidraw.com/p/readonly/YYYYYY"></textarea>
+  <button class="btn" id="btn" onclick="run()">Download</button>
+  <div id="log"></div>
+</div>
 
-    async function fetchWithProxy(targetUrl) {
-      for (const makeProxy of PROXIES) {
-        try {
-          const res = await fetch(makeProxy(targetUrl), { signal: AbortSignal.timeout(12000) });
-          if (!res.ok) continue;
-          const html = await res.text();
-          if (html.includes('"sceneContents":')) return html;
-        } catch (_) { /* essaie le suivant */ }
-      }
-      throw new Error('All proxies failed — use the Python CLI instead');
-    }
+<footer>
+  <a href="https://github.com/0emirhan/excalidraw-dl">GitHub</a>
+  &nbsp;·&nbsp; No server. No tracking. Runs in your browser.
+</footer>
 
-    function parseScene(html) {
-      const idx = html.indexOf('"sceneContents":');
-      if (idx === -1) throw new Error('No scene data found in page');
-      const raw = html.slice(idx + 16);
-      const unesc = raw.replace(/\\"/g, '"').replace(/\\\\/g, '\\').replace(/\\\//g, '/');
-      let depth = 0, end = 0;
-      for (let i = 0; i < unesc.length; i++) {
-        if (unesc[i] === '{') depth++;
-        else if (unesc[i] === '}') { depth--; if (depth === 0) { end = i + 1; break; } }
-      }
-      if (!end) throw new Error('Could not extract scene JSON');
-      const json = unesc.slice(0, end);
-      JSON.parse(json); // validate
-      return json;
-    }
+<script>
+// ─── Bookmarklet ──────────────────────────────────────────────────────────────
+// Écrit comme vraie fonction puis converti via .toString()
+// → aucun problème d'échappement de regex dans un template literal
 
-    function safeFilename(title) {
-      return (title || 'excalidraw-export')
-        .replace(/ - Excalidraw\+$/, '').trim()
-        .replace(/[\/\\:*?"<>|]/g, '_') || 'excalidraw-export';
-    }
-
-    function download(json, filename) {
-      const blob = new Blob([json], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = filename + '.excalidraw';
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 1000);
-    }
-
-    function addLog(url, state, detail = '') {
-      const id = 'log-' + url.slice(-20).replace(/\W/g, '');
-      const existing = document.getElementById(id);
-      const html = renderLog(url, state, detail);
-      if (existing) { existing.className = 'log-item ' + state; existing.innerHTML = html; return; }
-      const div = document.createElement('div');
-      div.id = id; div.className = 'log-item ' + state; div.innerHTML = html;
-      document.getElementById('log').appendChild(div);
-    }
-
-    function renderLog(url, state, detail) {
-      const icons = { loading: '<div class="spinner"></div>', success: '<span class="icon">✓</span>', error: '<span class="icon" style="color:var(--red)">✗</span>' };
-      const shortUrl = url.replace('https://link.excalidraw.com/p/readonly/', '…/');
-      return `${icons[state]}<div><div>${shortUrl}</div>${detail ? `<div class="log-detail">${detail}</div>` : ''}</div>`;
-    }
-
-    async function processUrl(url) {
-      url = url.trim();
-      if (!url) return;
-      if (!url.startsWith('https://link.excalidraw.com/p/readonly/')) {
-        addLog(url, 'error', 'Not a valid Excalidraw+ read-only link');
+function excalidrawDL() {
+  // Fetch la même page sans cookies (au cas où le user est connecté à Excalidraw+
+  // et que le serveur renvoie une page différente pour les comptes authentifiés)
+  fetch(location.href, { credentials: 'omit', cache: 'no-store' })
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function(html) {
+      // Le HTML contient la payload RSC Next.js sous la forme :
+      // self.__next_f.push([1,"...\"sceneContents\":{\"type\":\"excalidraw\"..."])
+      // On cherche '"sceneContents":' directement dans le texte brut.
+      var KEY = '"sceneContents":';
+      var idx = html.indexOf(KEY);
+      if (idx === -1) {
+        alert('Aucune donnée de scène trouvée.\nAssure-toi que la page est entièrement chargée.');
         return;
       }
-      addLog(url, 'loading', 'Fetching…');
-      try {
-        const html = await fetchWithProxy(url);
-        const json = parseScene(html);
-        const parsed = JSON.parse(json);
-        const titleMatch = html.match(/<title>([^<]+)<\/title>/);
-        const title = titleMatch ? safeFilename(titleMatch[1]) : 'excalidraw-export';
-        download(json, title);
-        addLog(url, 'success', `${parsed.elements.length} elements — ${title}.excalidraw`);
-      } catch (e) {
-        const id = e.message.includes('proxies failed') ? e.message : e.message;
-        addLog(url, 'error', `${id} — <a href="https://github.com/0emirhan/excalidraw-dl#cli" target="_blank" style="color:var(--accent-hover)">use Python CLI</a>`);
+
+      // On avance après la clé — le prochain char doit être '{'
+      var start = idx + KEY.length;
+      // Saute d'éventuels espaces
+      while (html[start] === ' ' || html[start] === '\n') start++;
+      if (html[start] !== '{') {
+        alert('Format inattendu après sceneContents.');
+        return;
       }
-    }
 
-    async function run() {
-      const urls = document.getElementById('input').value.split('\n').filter(u => u.trim());
-      if (!urls.length) return;
-      const btn = document.getElementById('btn');
-      document.getElementById('log').innerHTML = '';
-      btn.disabled = true;
-      btn.textContent = 'Downloading…';
-      await Promise.all(urls.map(processUrl));
-      btn.disabled = false;
-      btn.textContent = 'Download';
-    }
+      // Compte les accolades pour trouver la fin de l'objet JSON
+      var depth = 0, end = 0;
+      for (var i = start; i < html.length; i++) {
+        if (html[i] === '{') depth++;
+        else if (html[i] === '}') {
+          depth--;
+          if (depth === 0) { end = i + 1; break; }
+        }
+      }
+      if (!end) { alert('Impossible de parser la scène.'); return; }
 
-    // Allow Enter key to not submit, Ctrl+Enter to run
-    document.getElementById('input').addEventListener('keydown', e => {
-      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) run();
+      // Extrait le bloc brut (avec les \" du JS string escaping)
+      var raw = html.slice(start, end);
+
+      // Désescape : \" → "  et  \\ → \
+      // (le JSON est encodé dans une string JS dans le HTML)
+      var json = raw.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+
+      // Valide
+      var parsed;
+      try { parsed = JSON.parse(json); }
+      catch(e) { alert('JSON invalide : ' + e.message); return; }
+
+      // Nom du fichier depuis le titre de la page
+      var title = (document.title || 'scene')
+        .replace(/ - Excalidraw\+$/, '').trim();
+      var safe = title.replace(/[\/\\:*?"<>|]/g, '_') || 'excalidraw-export';
+
+      // Téléchargement
+      var blob = new Blob([json], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = safe + '.excalidraw';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      }, 1000);
+    })
+    .catch(function(e) {
+      alert('Erreur : ' + e.message);
     });
-  </script>
+}
 
+// Injecte le bookmarklet dans le lien
+document.getElementById('bm').href =
+  'javascript:(' + excalidrawDL.toString() + ')()';
+
+
+// ─── Batch download (même logique, sans alert) ────────────────────────────────
+var PROXIES = [
+  function(u) { return 'https://corsproxy.io/?' + encodeURIComponent(u); },
+  function(u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+];
+
+function parseScene(html) {
+  var KEY = '"sceneContents":';
+  var idx = html.indexOf(KEY);
+  if (idx === -1) throw new Error('sceneContents not found in page');
+  var start = idx + KEY.length;
+  while (html[start] === ' ' || html[start] === '\n') start++;
+  if (html[start] !== '{') throw new Error('Unexpected format after sceneContents');
+  var depth = 0, end = 0;
+  for (var i = start; i < html.length; i++) {
+    if (html[i] === '{') depth++;
+    else if (html[i] === '}') { depth--; if (depth === 0) { end = i + 1; break; } }
+  }
+  if (!end) throw new Error('Could not find end of scene object');
+  var raw = html.slice(start, end);
+  var json = raw.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+  JSON.parse(json); // throws if invalid
+  return json;
+}
+
+async function fetchScene(url) {
+  // Essaie d'abord sans proxy (même domaine via l'outil local si possible)
+  var errors = [];
+  for (var i = 0; i < PROXIES.length; i++) {
+    try {
+      var res = await fetch(PROXIES[i](url), { signal: AbortSignal.timeout(14000) });
+      if (!res.ok) { errors.push('HTTP ' + res.status); continue; }
+      var html = await res.text();
+      if (html.indexOf('"sceneContents":') === -1) { errors.push('proxy returned page without scene data'); continue; }
+      return html;
+    } catch(e) { errors.push(e.message); }
+  }
+  throw new Error('All proxies failed: ' + errors.join(' | '));
+}
+
+function triggerDownload(json, filename) {
+  var blob = new Blob([json], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename + '.excalidraw';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function() { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 1000);
+}
+
+function safeFilename(title) {
+  return (title || 'excalidraw-export')
+    .replace(/ - Excalidraw\+$/, '').trim()
+    .replace(/[\/\\:*?"<>|]/g, '_') || 'excalidraw-export';
+}
+
+function logItem(url, state, detail) {
+  var id = 'log-' + url.slice(-20).replace(/\W/g, '');
+  var el = document.getElementById(id);
+  var icons = {
+    loading: '<div class="spinner"></div>',
+    success: '<span style="color:var(--green);flex-shrink:0;margin-top:1px">✓</span>',
+    error:   '<span style="color:var(--red);flex-shrink:0;margin-top:1px">✗</span>'
+  };
+  var short = url.replace('https://link.excalidraw.com/p/readonly/', '…/');
+  var inner = icons[state] + '<div><div>' + short + '</div>'
+    + (detail ? '<div class="log-detail">' + detail + '</div>' : '') + '</div>';
+  if (el) { el.className = 'log-item ' + state; el.innerHTML = inner; }
+  else {
+    var div = document.createElement('div');
+    div.id = id; div.className = 'log-item ' + state; div.innerHTML = inner;
+    document.getElementById('log').appendChild(div);
+  }
+}
+
+async function processUrl(url) {
+  url = url.trim();
+  if (!url) return;
+  if (!url.startsWith('https://link.excalidraw.com/p/readonly/')) {
+    logItem(url, 'error', 'URL invalide — doit commencer par https://link.excalidraw.com/p/readonly/');
+    return;
+  }
+  logItem(url, 'loading', 'Fetching…');
+  try {
+    var html = await fetchScene(url);
+    var json = parseScene(html);
+    var parsed = JSON.parse(json);
+    var titleMatch = html.match(/<title>([^<]+)<\/title>/);
+    var title = titleMatch ? safeFilename(titleMatch[1]) : 'excalidraw-export';
+    triggerDownload(json, title);
+    logItem(url, 'success', parsed.elements.length + ' éléments — ' + title + '.excalidraw');
+  } catch(e) {
+    logItem(url, 'error', e.message
+      + ' — <a href="https://github.com/0emirhan/excalidraw-dl" target="_blank" style="color:var(--accent-h)">utilise le script Python</a>');
+  }
+}
+
+async function run() {
+  var urls = document.getElementById('input').value.split('\n').filter(function(u) { return u.trim(); });
+  if (!urls.length) return;
+  document.getElementById('log').innerHTML = '';
+  var btn = document.getElementById('btn');
+  btn.disabled = true; btn.textContent = 'Downloading…';
+  await Promise.all(urls.map(processUrl));
+  btn.disabled = false; btn.textContent = 'Download';
+}
+
+document.getElementById('input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) run();
+});
+</script>
 </body>
 </html>
