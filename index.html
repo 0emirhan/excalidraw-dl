@@ -177,7 +177,24 @@ https://link.excalidraw.com/p/readonly/ZZZZZZ"></textarea>
   </footer>
 
   <script>
-    const PROXY = 'https://api.allorigins.win/raw?url=';
+    // Proxies tentés dans l'ordre — le premier qui répond avec les données gagne
+    const PROXIES = [
+      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      url => `https://thingproxy.freeboard.io/fetch/${url}`,
+    ];
+
+    async function fetchWithProxy(targetUrl) {
+      for (const makeProxy of PROXIES) {
+        try {
+          const res = await fetch(makeProxy(targetUrl), { signal: AbortSignal.timeout(12000) });
+          if (!res.ok) continue;
+          const html = await res.text();
+          if (html.includes('"sceneContents":')) return html;
+        } catch (_) { /* essaie le suivant */ }
+      }
+      throw new Error('All proxies failed — use the Python CLI instead');
+    }
 
     function parseScene(html) {
       const idx = html.indexOf('"sceneContents":');
@@ -212,16 +229,12 @@ https://link.excalidraw.com/p/readonly/ZZZZZZ"></textarea>
     }
 
     function addLog(url, state, detail = '') {
-      const existing = document.getElementById('log-' + btoa(url).replace(/=/g, ''));
-      if (existing) {
-        existing.className = 'log-item ' + state;
-        existing.innerHTML = renderLog(url, state, detail);
-        return;
-      }
+      const id = 'log-' + url.slice(-20).replace(/\W/g, '');
+      const existing = document.getElementById(id);
+      const html = renderLog(url, state, detail);
+      if (existing) { existing.className = 'log-item ' + state; existing.innerHTML = html; return; }
       const div = document.createElement('div');
-      div.id = 'log-' + btoa(url).replace(/=/g, '');
-      div.className = 'log-item ' + state;
-      div.innerHTML = renderLog(url, state, detail);
+      div.id = id; div.className = 'log-item ' + state; div.innerHTML = html;
       document.getElementById('log').appendChild(div);
     }
 
@@ -240,9 +253,7 @@ https://link.excalidraw.com/p/readonly/ZZZZZZ"></textarea>
       }
       addLog(url, 'loading', 'Fetching…');
       try {
-        const res = await fetch(PROXY + encodeURIComponent(url));
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const html = await res.text();
+        const html = await fetchWithProxy(url);
         const json = parseScene(html);
         const parsed = JSON.parse(json);
         const titleMatch = html.match(/<title>([^<]+)<\/title>/);
@@ -250,7 +261,8 @@ https://link.excalidraw.com/p/readonly/ZZZZZZ"></textarea>
         download(json, title);
         addLog(url, 'success', `${parsed.elements.length} elements — ${title}.excalidraw`);
       } catch (e) {
-        addLog(url, 'error', e.message);
+        const id = e.message.includes('proxies failed') ? e.message : e.message;
+        addLog(url, 'error', `${id} — <a href="https://github.com/0emirhan/excalidraw-dl#cli" target="_blank" style="color:var(--accent-hover)">use Python CLI</a>`);
       }
     }
 
