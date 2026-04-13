@@ -1,24 +1,52 @@
 # Excalidraw DL
 
-> Download any read-only Excalidraw presentation as an editable `.excalidraw` file — directly from your browser.
+> Download any read-only Excalidraw+ presentation as a fully editable `.excalidraw` file — directly from your browser. No server. No account. No install.
 
-**[→ Use the tool](https://0emirhan.github.io/excalidraw-dl)**
+**[→ excalidraw-dl.github.io](https://0emirhan.github.io/excalidraw-dl)**
+
+---
+
+## Features
+
+- One-click download of any `link.excalidraw.com/p/readonly/…` presentation
+- Preserves all elements, frames, and app state
+- File is named after the presentation title automatically
+- Runs 100% client-side — your data never leaves your browser
+- Works on Chrome, Firefox, Edge, Brave, Safari
+
+## Usage
+
+### Bookmarklet (recommended)
+
+1. Visit **[the tool page](https://0emirhan.github.io/excalidraw-dl)**
+2. Drag the **Excalidraw DL** button to your bookmarks bar
+3. Open any read-only Excalidraw+ link
+4. Click the bookmark → `.excalidraw` file downloads instantly
+
+### Batch download (Python CLI)
+
+For downloading multiple files at once from the command line:
+
+```bash
+pip install requests
+python excalidraw_dl.py \
+  https://link.excalidraw.com/p/readonly/XXXXXX \
+  https://link.excalidraw.com/p/readonly/YYYYYY \
+  -o ./output
+```
 
 ## How it works
 
-A single bookmarklet. No server, no account, no install.
-
-1. Visit the page above and drag **Excalidraw DL** to your bookmarks bar
-2. Open any `link.excalidraw.com/p/readonly/…` URL
-3. Click the bookmark → file downloads instantly
-
-The bookmarklet reads the scene data already embedded in the page (Next.js RSC payload) and triggers a browser download. Everything runs locally.
+Excalidraw+ read-only pages are server-side rendered with Next.js. The full scene JSON is embedded in the page's RSC payload (`window.__next_f`). The bookmarklet reads this payload directly from the already-loaded page, extracts the `sceneContents` object, and triggers a browser download — no network request needed.
 
 ## Compatibility
 
-Works on `link.excalidraw.com` read-only presentations (Excalidraw+).  
-Tested on Chrome, Firefox, Edge, Brave, Safari.
+| Platform | Status |
+|----------|--------|
+| `link.excalidraw.com/p/readonly/…` | ✅ Supported |
+| `excalidraw.com/#json=…` | ✅ Supported (use built-in export) |
+| Password-protected rooms | ❌ Not supported |
 
 ## License
 
-MIT
+[MIT](LICENSE) © 2026 [0emirhan](https://github.com/0emirhan)
