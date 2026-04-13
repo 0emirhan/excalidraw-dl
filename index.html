@@ -16,6 +16,7 @@
       --accent: #6e40c9;
       --accent-hover: #8957e5;
       --green: #3fb950;
+      --red: #f85149;
       --code-bg: #1f2428;
     }
 
@@ -27,16 +28,17 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 60px 20px 80px;
+      justify-content: center;
+      padding: 40px 20px;
     }
 
     header {
       text-align: center;
-      margin-bottom: 56px;
+      margin-bottom: 40px;
     }
 
     header h1 {
-      font-size: 2.4rem;
+      font-size: 2.2rem;
       font-weight: 700;
       letter-spacing: -0.5px;
     }
@@ -44,258 +46,230 @@
     header h1 span { color: var(--accent-hover); }
 
     header p {
-      margin-top: 12px;
+      margin-top: 10px;
       color: var(--muted);
-      font-size: 1.05rem;
+      font-size: 0.95rem;
     }
 
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 32px;
+      padding: 28px;
       width: 100%;
-      max-width: 640px;
-      margin-bottom: 24px;
+      max-width: 600px;
     }
 
-    .card h2 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 20px;
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Cascadia Code', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.85rem;
+      padding: 12px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+      line-height: 1.6;
     }
 
-    /* Bookmarklet */
-    .bookmarklet-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
+    textarea:focus { border-color: var(--accent); }
 
-    .bookmarklet-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 28px;
+    textarea::placeholder { color: var(--muted); }
+
+    .btn {
+      margin-top: 14px;
+      width: 100%;
+      padding: 13px;
       background: var(--accent);
       color: #fff;
       font-size: 1rem;
       font-weight: 600;
+      border: none;
       border-radius: 8px;
-      text-decoration: none;
-      border: 2px dashed transparent;
-      cursor: grab;
+      cursor: pointer;
       transition: background 0.15s, transform 0.1s;
-      user-select: none;
     }
 
-    .bookmarklet-btn:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-    }
+    .btn:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .bookmarklet-btn:active { cursor: grabbing; }
-
-    .drag-hint {
-      color: var(--muted);
-      font-size: 0.88rem;
-      text-align: center;
-    }
-
-    .drag-hint strong { color: var(--text); }
-
-    /* Steps */
-    .steps {
+    /* Log */
+    #log {
+      margin-top: 20px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 8px;
     }
 
-    .step {
+    .log-item {
       display: flex;
-      gap: 16px;
       align-items: flex-start;
+      gap: 10px;
+      font-size: 0.88rem;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      word-break: break-all;
     }
 
-    .step-num {
+    .log-item.loading { border-color: var(--accent); }
+    .log-item.success { border-color: var(--green); }
+    .log-item.error   { border-color: var(--red); }
+
+    .icon {
+      font-size: 1rem;
       flex-shrink: 0;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.82rem;
-      font-weight: 700;
       margin-top: 1px;
     }
 
-    .step-text {
-      font-size: 0.95rem;
-      line-height: 1.5;
-      color: var(--text);
-    }
+    .log-detail { color: var(--muted); font-size: 0.8rem; margin-top: 3px; }
 
-    .step-text code {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 1px 6px;
-      font-family: 'Cascadia Code', 'Fira Code', monospace;
-      font-size: 0.88em;
-      color: var(--accent-hover);
-    }
-
-    /* Compatibility */
-    .compat {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 0.85rem;
-      color: var(--text);
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-    }
-
-    /* Footer */
     footer {
-      margin-top: 40px;
+      margin-top: 32px;
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       text-align: center;
     }
 
-    footer a {
-      color: var(--accent-hover);
-      text-decoration: none;
+    footer a { color: var(--accent-hover); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent-hover);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+      margin-top: 2px;
     }
 
-    footer a:hover { text-decoration: underline; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
   <header>
     <h1>Excalidraw <span>DL</span></h1>
-    <p>Download any read-only Excalidraw presentation as an editable <code style="background:#1f2428;padding:2px 6px;border-radius:4px;color:#8957e5">.excalidraw</code> file.</p>
+    <p>Paste one or more read-only Excalidraw links — one per line.</p>
   </header>
 
   <div class="card">
-    <h2>1 — Install the bookmarklet</h2>
-    <div class="bookmarklet-wrap">
-      <a class="bookmarklet-btn" id="bookmarklet" href="#" title="Drag me to your bookmarks bar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/>
-          <line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        Excalidraw DL
-      </a>
-      <p class="drag-hint">
-        <strong>Drag</strong> this button to your browser's bookmarks bar<br>
-        (or right-click → Bookmark this link)
-      </p>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>2 — How to use</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-text">Open any <code>link.excalidraw.com/p/readonly/…</code> page</div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-text">Wait for the drawing to fully load</div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-text">Click <strong>Excalidraw DL</strong> in your bookmarks bar</div>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-text">The <code>.excalidraw</code> file downloads instantly — open it in <a href="https://excalidraw.com" target="_blank" style="color:#8957e5">excalidraw.com</a> or any local install to edit it</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Compatibility</h2>
-    <div class="compat">
-      <div class="badge"><div class="dot"></div>Chrome</div>
-      <div class="badge"><div class="dot"></div>Firefox</div>
-      <div class="badge"><div class="dot"></div>Edge</div>
-      <div class="badge"><div class="dot"></div>Safari</div>
-      <div class="badge"><div class="dot"></div>Brave</div>
-    </div>
-    <p style="margin-top:14px;color:var(--muted);font-size:0.88rem;">
-      Works on <code style="color:#8957e5;background:#1f2428;padding:1px 5px;border-radius:3px">link.excalidraw.com</code> read-only presentations.
-      Does not require an account.
-    </p>
+    <textarea id="input" placeholder="https://link.excalidraw.com/p/readonly/XXXXXX
+https://link.excalidraw.com/p/readonly/YYYYYY
+https://link.excalidraw.com/p/readonly/ZZZZZZ"></textarea>
+    <button class="btn" id="btn" onclick="run()">Download</button>
+    <div id="log"></div>
   </div>
 
   <footer>
-    <a href="https://github.com/0emirhan/excalidraw-dl">View on GitHub</a>
+    <a href="https://github.com/0emirhan/excalidraw-dl">GitHub</a>
     &nbsp;·&nbsp;
-    No server. No tracking. Runs entirely in your browser.
+    No data is stored. Files download directly to your browser.
   </footer>
 
   <script>
-    // Build the bookmarklet code
-    // Approche : fetch() la page depuis le même domaine (pas de CORS),
-    // parse le HTML brut comme le fait le script Python — contourne le SES lockdown.
-    var code = `(function(){
-  fetch(window.location.href)
-    .then(function(r){return r.text();})
-    .then(function(html){
-      var idx=html.indexOf('"sceneContents":');
-      if(idx===-1){alert('Aucune donnée de scène trouvée.\\nCe lien est-il bien un lien Excalidraw+ read-only ?');return;}
-      var raw=html.slice(idx+16);
-      // Les données sont dans une string JS escapée — on désescape
-      var unesc=raw.replace(/\\\\"/g,'"').replace(/\\\\\\\\/g,'\\\\').replace(/\\\\\\//g,'/');
-      var depth=0,end=0;
-      for(var i=0;i<unesc.length;i++){
-        if(unesc[i]==='{')depth++;
-        else if(unesc[i]==='}'){depth--;if(depth===0){end=i+1;break;}}
-      }
-      if(!end){alert('Impossible de parser la scène.');return;}
-      var json=unesc.slice(0,end);
-      try{JSON.parse(json);}catch(e){alert('JSON invalide: '+e.message);return;}
-      var title=(document.title||'scene').replace(/ - Excalidraw\\+$/,'').trim();
-      var safe=title.replace(/[\\/\\\\:*?"<>|]/g,'_')||'excalidraw-export';
-      var blob=new Blob([json],{type:'application/json'});
-      var a=document.createElement('a');
-      a.href=URL.createObjectURL(blob);
-      a.download=safe+'.excalidraw';
-      document.body.appendChild(a);a.click();
-      setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(a.href);},1000);
-    })
-    .catch(function(e){alert('Erreur réseau: '+e.message);});
-})();`;
+    const PROXY = 'https://api.allorigins.win/raw?url=';
 
-    var minified = code.replace(/\n\s*/g,' ').trim();
-    document.getElementById('bookmarklet').href = 'javascript:' + minified;
+    function parseScene(html) {
+      const idx = html.indexOf('"sceneContents":');
+      if (idx === -1) throw new Error('No scene data found in page');
+      const raw = html.slice(idx + 16);
+      const unesc = raw.replace(/\\"/g, '"').replace(/\\\\/g, '\\').replace(/\\\//g, '/');
+      let depth = 0, end = 0;
+      for (let i = 0; i < unesc.length; i++) {
+        if (unesc[i] === '{') depth++;
+        else if (unesc[i] === '}') { depth--; if (depth === 0) { end = i + 1; break; } }
+      }
+      if (!end) throw new Error('Could not extract scene JSON');
+      const json = unesc.slice(0, end);
+      JSON.parse(json); // validate
+      return json;
+    }
+
+    function safeFilename(title) {
+      return (title || 'excalidraw-export')
+        .replace(/ - Excalidraw\+$/, '').trim()
+        .replace(/[\/\\:*?"<>|]/g, '_') || 'excalidraw-export';
+    }
+
+    function download(json, filename) {
+      const blob = new Blob([json], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename + '.excalidraw';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(a.href); }, 1000);
+    }
+
+    function addLog(url, state, detail = '') {
+      const existing = document.getElementById('log-' + btoa(url).replace(/=/g, ''));
+      if (existing) {
+        existing.className = 'log-item ' + state;
+        existing.innerHTML = renderLog(url, state, detail);
+        return;
+      }
+      const div = document.createElement('div');
+      div.id = 'log-' + btoa(url).replace(/=/g, '');
+      div.className = 'log-item ' + state;
+      div.innerHTML = renderLog(url, state, detail);
+      document.getElementById('log').appendChild(div);
+    }
+
+    function renderLog(url, state, detail) {
+      const icons = { loading: '<div class="spinner"></div>', success: '<span class="icon">✓</span>', error: '<span class="icon" style="color:var(--red)">✗</span>' };
+      const shortUrl = url.replace('https://link.excalidraw.com/p/readonly/', '…/');
+      return `${icons[state]}<div><div>${shortUrl}</div>${detail ? `<div class="log-detail">${detail}</div>` : ''}</div>`;
+    }
+
+    async function processUrl(url) {
+      url = url.trim();
+      if (!url) return;
+      if (!url.startsWith('https://link.excalidraw.com/p/readonly/')) {
+        addLog(url, 'error', 'Not a valid Excalidraw+ read-only link');
+        return;
+      }
+      addLog(url, 'loading', 'Fetching…');
+      try {
+        const res = await fetch(PROXY + encodeURIComponent(url));
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const html = await res.text();
+        const json = parseScene(html);
+        const parsed = JSON.parse(json);
+        const titleMatch = html.match(/<title>([^<]+)<\/title>/);
+        const title = titleMatch ? safeFilename(titleMatch[1]) : 'excalidraw-export';
+        download(json, title);
+        addLog(url, 'success', `${parsed.elements.length} elements — ${title}.excalidraw`);
+      } catch (e) {
+        addLog(url, 'error', e.message);
+      }
+    }
+
+    async function run() {
+      const urls = document.getElementById('input').value.split('\n').filter(u => u.trim());
+      if (!urls.length) return;
+      const btn = document.getElementById('btn');
+      document.getElementById('log').innerHTML = '';
+      btn.disabled = true;
+      btn.textContent = 'Downloading…';
+      await Promise.all(urls.map(processUrl));
+      btn.disabled = false;
+      btn.textContent = 'Download';
+    }
+
+    // Allow Enter key to not submit, Ctrl+Enter to run
+    document.getElementById('input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) run();
+    });
   </script>
 
 </body>
